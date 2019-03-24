@@ -51,6 +51,62 @@ void WorldSession::SendPartyResult(PartyOperation operation, const std::string& 
     SendPacket(&data);
 }
 
+
+void WorldSession::HandleGroupSwapSubGroupOpcode(WorldPacket& recv_data)
+{
+  std::string p1_name, p2_name;
+
+  recv_data >> p1_name;
+  recv_data >> p2_name;
+
+  Player* player = GetPlayer();
+  Group* group = player->GetGroup();
+  if (!group || !group->isRaidGroup()) 
+  {
+    return;
+  }
+
+  if (!group->IsLeader(player->GetObjectGUID()) &&
+      !group->IsAssistant(player->GetObjectGUID()))
+  {
+    return;
+  }
+
+  auto getGUID = [&group](std::string const& player_name)
+  {
+    if (Player* player = sObjectMgr.GetPlayer(player_name.c_str()))
+    {
+      return player->GetObjectGUID();
+    }
+    else
+    {
+      if (ObjectGuid guid = sObjectMgr.GetPlayerGUIDByName(player_name.c_str()))
+      {
+        return guid;
+      }
+      else
+      {
+        return ObjectGuid();
+      }
+    }
+  };
+
+  ObjectGuid p1_guid = getGUID(p1_name);
+  ObjectGuid p2_guid = getGUID(p2_name);
+
+  uint8 group_id1 = group->GetMemberGroup(p1_guid);
+  uint8 group_id2 = group->GetMemberGroup(p2_guid);
+
+  if (group_id1 > MAXRAIDSUBGROUPS || group_id2 > MAXRAIDSUBGROUPS)
+  {
+    return;
+  }
+
+  group->ChangeMembersGroup(p1_guid, group_id2);
+  group->ChangeMembersGroup(p2_guid, group_id1);
+}
+
+
 void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
 {
     std::string membername;

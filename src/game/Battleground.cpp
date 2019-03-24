@@ -744,8 +744,31 @@ void Battleground::EndBattleground(uint32 winner)
         }
         else
         {
-            SetArenaTeamRatingChangeForTeam(ALLIANCE, 0);
-            SetArenaTeamRatingChangeForTeam(HORDE, 0);
+            if (m_ArenaType == ARENA_TYPE_1v1)
+            {
+              uint32 winner_id = GetArenaTeamIdForTeam(winner == ALLIANCE ? ALLIANCE : HORDE);
+              uint32 loser_id = GetArenaTeamIdForTeam(winner == ALLIANCE ? HORDE : ALLIANCE);
+              Player* player_won = ObjectAccessor::FindPlayer(winner_id);
+              Player* player_lost = ObjectAccessor::FindPlayer(loser_id);
+              // Winnner
+              player_won->add1v1ArenaWin();
+              float chance_winner = winner_arena_team->GetChanceAgainst(player_won->get1v1ArenaRating(), player_lost->get1v1ArenaRating());
+              int32 mod = (int32)floor(32.0f * (1.0f - chance_winner));
+              player_won->set1v1ArenaRating(player_won->get1v1ArenaRating() + mod);
+              // Loser
+              float chance_loser = loser_arena_team->GetChanceAgainst(player_lost->get1v1ArenaRating(), player_won->get1v1ArenaRating());
+              mod = (int32)floor(32.0f * (1.0f - chance_loser));
+              player_lost->set1v1ArenaRating(player_lost->get1v1ArenaRating() - mod);
+              player_won->add1v1ArenaGame();
+              player_won->SaveToDB();
+              player_lost->add1v1ArenaGame();
+              player_lost->SaveToDB();
+            }
+            else
+            {
+                SetArenaTeamRatingChangeForTeam(ALLIANCE, 0);
+                SetArenaTeamRatingChangeForTeam(HORDE, 0);
+            }
         }
     }
 

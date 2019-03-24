@@ -15,6 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "BattlegroundMgr.h"
 #include "Common.h"
 #include "Database/DatabaseEnv.h"
 #include "WorldPacket.h"
@@ -84,6 +85,123 @@ bool ChatHandler::HandleStartCommand(const char* /*args*/)
     // Teleport to starting location
     chr->TeleportTo(chr->GetStartPosition());
     return true;
+}
+
+bool ChatHandler::HandleQueue1v1ArenaCommand(const char* args)
+{
+  Player* player = m_session->GetPlayer();
+  if (!player->has1v1ArenaTeam())
+  {
+    PSendSysMessage("You have to be in a 1v1 arena team");
+    return true;
+  }
+
+  if (player->InBattlegroundQueueForBattlegroundQueueType(BATTLEGROUND_QUEUE_1v1))
+  {
+    PSendSysMessage("You are already queued");
+    return true;
+  }
+
+  GroupQueueInfo* gInfo = sBattlegroundMgr.m_BattlegroundQueues[BATTLEGROUND_QUEUE_1v1].AddGroup(player, BATTLEGROUND_QUEUE_1v1, ARENA_TYPE_1v1, true, player->get1v1ArenaRating(), player->GetGUIDLow());
+  if (!player)
+  {
+      return false;
+  }
+
+  uint32 queueSlot = player->AddBattlegroundQueueId(BATTLEGROUND_QUEUE_1v1);
+  player->SetBattlegroundEntryPoint(player->GetMapId(), player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
+
+  WorldPacket data;
+  sBattlegroundMgr.BuildBattlegroundStatusPacket(&data, sBattlegroundMgr.GetBattlegroundTemplate(BATTLEGROUND_QUEUE_1v1), player->GetTeam(), queueSlot, STATUS_WAIT_QUEUE, 0, 1);
+  player->GetSession()->SendPacket(&data);
+  sBattlegroundMgr.m_BattlegroundQueues[BATTLEGROUND_QUEUE_1v1].AddPlayer(player, gInfo);
+  sBattlegroundMgr.m_BattlegroundQueues[BATTLEGROUND_QUEUE_1v1].Update(BATTLEGROUND_QUEUE_1v1, player->GetBattlegroundQueueIdFromLevel(), ARENA_TYPE_1v1, true, player->get1v1ArenaRating());
+
+  PSendSysMessage("Joined 1v1 arena queue");
+  return true;
+}
+
+bool ChatHandler::HandleCreate1v1ArenaCommand(const char* args)
+{
+  Player* player = m_session->GetPlayer();
+  if (player->has1v1ArenaTeam()) {
+    PSendSysMessage("You already have an 1v1 arena team");
+    return true;
+  }
+
+  std::string args_str(args);
+  if (args_str.length() < 5) 
+  {
+    PSendSysMessage("The arena team name must be at least 5 characters long");
+    return true;
+  }
+
+  player->setHas1v1ArenaTeam(true);
+  player->set1v1ArenaRating(1500);
+  player->arena1v1.games = 0;
+  player->arena1v1.wins = 0;
+  player->set1v1ArenaName(args);
+
+  CharacterDatabase.PExecute("INSERT INTO arena_1v1 (GUID, name, rating, wins, games) VALUES('%u', '%s', '%u', '%u', '%u')", 
+      player->GetGUIDLow(), args, 1500, 0, 0);
+
+  PSendSysMessage("Created arena team called %s with rating %d.", args, 1500);
+
+  return true;
+}
+
+bool ChatHandler::HandleRating1v1ArenaCommand(const char*)
+{
+  Player *player = m_session->GetPlayer();
+  if (!player->has1v1ArenaTeam())
+  {
+    PSendSysMessage("You're not in an 1v1 arena team");
+    return true;
+  }
+
+  PSendSysMessage("Your 1v1 arena rating is: %d", player->get1v1ArenaRating());
+  return true;
+}
+
+bool ChatHandler::HandleDelete1v1ArenaCommand(const char*)
+{
+  Player *player = m_session->GetPlayer();
+  if (!player->has1v1ArenaTeam())
+  {
+    PSendSysMessage("You don't have an 1v1 arena team to delete");
+    return true;
+  }
+
+  player->setHas1v1ArenaTeam(false);
+  CharacterDatabase.PExecute("DELETE FROM arena_1v1 WHERE GUID = '%u'", player->GetGUIDLow());
+  PSendSysMessage("Successfully deleted your 1v1 arena team");
+  return true;
+}
+
+bool ChatHandler::HandleGames1v1ArenaCommand(const char*)
+{
+  Player *player = m_session->GetPlayer();
+  if (!player->has1v1ArenaTeam())
+  {
+    PSendSysMessage("You're not in an 1v1 arena team");
+    return true;
+  }
+
+  PSendSysMessage("You have a total of %d games.", player->get1v1ArenaGames());
+  return true;
+}
+
+bool ChatHandler::HandleWins1v1ArenaCommand(const char*)
+{
+  Player *player = m_session->GetPlayer();
+  if (!player->has1v1ArenaTeam())
+  {
+    PSendSysMessage("You're not in an 1v1 arena team");
+    return true;
+  }
+
+  PSendSysMessage("You have a total of %d wins.", player->get1v1ArenaWins());
+  return true;
 }
 
 bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)

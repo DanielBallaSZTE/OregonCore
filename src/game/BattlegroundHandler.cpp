@@ -706,6 +706,9 @@ void WorldSession::HandleBattlegroundArenaJoin(WorldPacket& recv_data)
     case 2:
         arenatype = ARENA_TYPE_5v5;
         break;
+    case 3:
+         arenatype = ARENA_TYPE_1v1;
+         break;
     default:
         sLog.outError("Unknown arena slot %u at HandleBattlegroundArenaJoin()", arenaslot);
         return;

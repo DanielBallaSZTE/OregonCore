@@ -37,6 +37,17 @@ bool ChatHandler::load_command_table = true;
 
 ChatCommand* ChatHandler::getCommandTable()
 {
+    static ChatCommand arena1v1CommandTable[] =
+    {
+        { "create",         SEC_PLAYER,         true,  &ChatHandler::HandleCreate1v1ArenaCommand,      "", NULL },
+        { "delete",         SEC_PLAYER,         true,  &ChatHandler::HandleDelete1v1ArenaCommand,      "", NULL },
+        { "games",          SEC_PLAYER,         true,  &ChatHandler::HandleGames1v1ArenaCommand,       "", NULL },
+        { "rating",         SEC_PLAYER,         true,  &ChatHandler::HandleRating1v1ArenaCommand,      "", NULL },
+        { "wins",           SEC_PLAYER,         true,  &ChatHandler::HandleWins1v1ArenaCommand,        "", NULL },
+        { "queue",          SEC_PLAYER,         true,  &ChatHandler::HandleQueue1v1ArenaCommand,       "", NULL },
+        { NULL,             0,                  false, NULL,                                           "", NULL }
+    };
+
     static ChatCommand accountSetCommandTable[] =
     {
         { "addon",          SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleAccountSetAddonCommand,     "", NULL },
@@ -636,6 +647,7 @@ ChatCommand* ChatHandler::getCommandTable()
         { "cheat",          SEC_GAMEMASTER,     false, NULL,                                           "", cheatCommandTable    },
 
         { "aura",           SEC_ADMINISTRATOR,  false, &ChatHandler::HandleAuraCommand,                "", NULL },
+        { "1v1arena",       SEC_PLAYER,         false, NULL,                                           "", arena1v1CommandTable },
         { "unaura",         SEC_ADMINISTRATOR,  false, &ChatHandler::HandleUnAuraCommand,              "", NULL },
         { "nameannounce",   SEC_MODERATOR,      false, &ChatHandler::HandleNameAnnounceCommand,        "", NULL },
         { "gmnameannounce", SEC_MODERATOR,      false, &ChatHandler::HandleGMNameAnnounceCommand,      "", NULL },

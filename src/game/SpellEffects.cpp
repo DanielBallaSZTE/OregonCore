@@ -4710,6 +4710,13 @@ void Spell::SpellDamageWeaponDmg(SpellEffIndex effIndex)
                 spell_bonus += int32(0.20f * m_caster->SpellBaseDamageBonus(GetSpellSchoolMask(m_spellInfo)));
                 spell_bonus += int32(0.29f * m_caster->SpellBaseDamageBonusForVictim(GetSpellSchoolMask(m_spellInfo), unitTarget));
             }
+
+            // Buff crusader strike
+            if (m_spellInfo->Id == 35395)
+            {
+              totalDamagePercentMod *= 1.1f;
+            }
+
             break;
         }
     case SPELLFAMILY_SHAMAN:

@@ -31,9 +31,9 @@ typedef std::list<Battleground*> BGFreeSlotQueueType;
 
 #define MAX_BATTLEGROUND_QUEUES 7                           // for level ranges 10-19, 20-29, 30-39, 40-49, 50-59, 60-69, 70+
 
-#define MAX_BATTLEGROUND_TYPES 9                            // each BG type will be in array
+#define MAX_BATTLEGROUND_TYPES 10                            // each BG type will be in array
 
-#define MAX_BATTLEGROUND_QUEUE_TYPES 8
+#define MAX_BATTLEGROUND_QUEUE_TYPES 9
 
 #define BATTLEGROUND_ARENA_POINT_DISTRIBUTION_DAY    86400     // seconds in a day
 

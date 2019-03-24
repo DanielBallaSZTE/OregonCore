@@ -158,6 +158,7 @@ enum BattlegroundQueueTypeId
     BATTLEGROUND_QUEUE_2v2     = 5,
     BATTLEGROUND_QUEUE_3v3     = 6,
     BATTLEGROUND_QUEUE_5v5     = 7,
+    BATTLEGROUND_QUEUE_1v1     = 8,
 };
 
 enum ScoreType
@@ -188,6 +189,7 @@ enum ScoreType
 
 enum ArenaType
 {
+    ARENA_TYPE_1v1          = 1,
     ARENA_TYPE_2v2          = 2,
     ARENA_TYPE_3v3          = 3,
     ARENA_TYPE_5v5          = 5

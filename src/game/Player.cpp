@@ -472,6 +472,8 @@ Player::Player(WorldSession* session) : Unit(true), m_reputationMgr(this)
 
     m_ExtraFlags = 0;
 
+    arena1v1.hasArenaTeam = false;
+
     // players always accept
     if (GetSession()->GetSecurity() == SEC_PLAYER)
         SetAcceptWhispers(true);
@@ -14449,6 +14451,31 @@ void Player::_LoadDeclinedNames(QueryResult_AutoPtr result)
         m_declinedname->name[i] = fields[i].GetCppString();
 }
 
+void Player::_Load1v1Arena(QueryResult_AutoPtr result)
+{
+  if (!result) {
+    return;
+  }
+
+  do
+  {
+    Field* fields = result->Fetch();
+    uint32 guid       = fields[0].GetUInt32();
+    std::string name  = fields[1].GetString();
+    uint32 rating     = fields[2].GetUInt32();
+    uint32 wins       = fields[3].GetUInt32();
+    uint32 games      = fields[4].GetUInt32();
+
+    arena1v1.teamId = guid;
+    arena1v1.games = games;
+    arena1v1.wins = wins;
+    arena1v1.rating = rating;
+    arena1v1.name = name;
+    arena1v1.hasArenaTeam = true;
+  } 
+  while (result->NextRow());
+}
+
 void Player::_LoadArenaTeamInfo(QueryResult_AutoPtr result)
 {
     // arenateamid, played_week, played_season, personal_rating
@@ -14682,6 +14709,7 @@ bool Player::LoadFromDB(uint32 guid, SqlQueryHolder* holder)
     _LoadGroup(holder->GetResult(PLAYER_LOGIN_QUERY_LOADGROUP));
 
     _LoadArenaTeamInfo(holder->GetResult(PLAYER_LOGIN_QUERY_LOADARENAINFO));
+    _Load1v1Arena(holder->GetResult(PLAYER_LOGIN_QUERY_LOAD1V1ARENAINFO));
 
     uint32 arena_currency = fields[40].GetUInt32();
     if (arena_currency > sWorld.getConfig(CONFIG_MAX_ARENA_POINTS))
@@ -16574,6 +16602,10 @@ void Player::SaveToDB()
     _SaveAuras();
     _SaveSkills();
     m_reputationMgr.SaveToDB();
+
+    // EXPERIMENTAL: save 1v1 arena team
+    CharacterDatabase.PExecute("UPDATE arena_1v1 SET rating = '%u', wins = '%u', games = '%u' WHERE GUID = '%u'",
+      arena1v1.rating, arena1v1.wins, arena1v1.games, GetGUIDLow());
 
     CharacterDatabase.CommitTransaction();
 

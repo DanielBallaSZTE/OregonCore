@@ -599,6 +599,12 @@ void BattlegroundQueue::Update(uint32 bgTypeId, uint32 queue_id, uint8 arenatype
         {
             switch (arenatype)
             {
+            case ARENA_TYPE_1v1:
+            {
+              MaxPlayersPerTeam = 1;
+              MinPlayersPerTeam = 1;
+              break;
+            }
             case ARENA_TYPE_2v2:
                 MaxPlayersPerTeam = 2;
                 MinPlayersPerTeam = 2;
@@ -674,6 +680,12 @@ void BattlegroundQueue::Update(uint32 bgTypeId, uint32 queue_id, uint8 arenatype
             {
                 switch (arenatype)
                 {
+                case ARENA_TYPE_1v1:
+                {
+                    bg2->SetMaxPlayersPerTeam(1);
+                    bg2->SetMaxPlayers(2);
+                    break;
+                }
                 case ARENA_TYPE_2v2:
                     bg2->SetMaxPlayersPerTeam(2);
                     bg2->SetMaxPlayers(4);
@@ -839,6 +851,12 @@ void BattlegroundQueue::Update(uint32 bgTypeId, uint32 queue_id, uint8 arenatype
             {
                 switch (arenatype)
                 {
+                case ARENA_TYPE_1v1:
+                {
+                    bg2->SetMaxPlayersPerTeam(1);
+                    bg2->SetMaxPlayers(2);
+                    break;
+                }
                 case ARENA_TYPE_2v2:
                     bg2->SetMaxPlayersPerTeam(2);
                     bg2->SetMaxPlayers(4);
@@ -1036,6 +1054,7 @@ void BattlegroundMgr::Update(uint32 diff)
         if (m_NextRatingDiscardUpdate < diff)
         {
             // forced update for level 70 rated arenas
+            m_BattlegroundQueues[BATTLEGROUND_QUEUE_1v1].Update(BATTLEGROUND_AA, 6, ARENA_TYPE_1v1, true, 0);
             m_BattlegroundQueues[BATTLEGROUND_QUEUE_2v2].Update(BATTLEGROUND_AA, 6, ARENA_TYPE_2v2, true, 0);
             m_BattlegroundQueues[BATTLEGROUND_QUEUE_3v3].Update(BATTLEGROUND_AA, 6, ARENA_TYPE_3v3, true, 0);
             m_BattlegroundQueues[BATTLEGROUND_QUEUE_5v5].Update(BATTLEGROUND_AA, 6, ARENA_TYPE_5v5, true, 0);
@@ -1317,6 +1336,10 @@ void BattlegroundMgr::InvitePlayer(Player* plr, uint32 bgInstanceGUID, uint32 te
     {
         switch (bg->GetArenaType())
         {
+        case ARENA_TYPE_1v1:
+            // TODO: ???
+            bg->SetArenaTeamIdForTeam(team, plr->arena1v1.teamId);
+            break;
         case ARENA_TYPE_2v2:
             bg->SetArenaTeamIdForTeam(team, plr->GetArenaTeamId(0));
             break;
@@ -1770,6 +1793,10 @@ uint32 BattlegroundMgr::BGQueueTypeId(uint32 bgTypeId, uint8 arenaType)
     case BATTLEGROUND_BE:
         switch (arenaType)
         {
+        // HOTFIX: 1v1arena somehow bugged on client side?
+        case 0:
+        case ARENA_TYPE_1v1:
+            return BATTLEGROUND_QUEUE_1v1;
         case ARENA_TYPE_2v2:
             return BATTLEGROUND_QUEUE_2v2;
         case ARENA_TYPE_3v3:
@@ -1796,6 +1823,7 @@ uint32 BattlegroundMgr::BGTemplateId(uint32 bgQueueTypeId) const
         return BATTLEGROUND_AV;
     case BATTLEGROUND_QUEUE_EY:
         return BATTLEGROUND_EY;
+    case BATTLEGROUND_QUEUE_1v1:
     case BATTLEGROUND_QUEUE_2v2:
     case BATTLEGROUND_QUEUE_3v3:
     case BATTLEGROUND_QUEUE_5v5:
@@ -1809,6 +1837,8 @@ uint8 BattlegroundMgr::BGArenaType(uint32 bgQueueTypeId) const
 {
     switch (bgQueueTypeId)
     {
+    case BATTLEGROUND_QUEUE_1v1:
+        return ARENA_TYPE_1v1;
     case BATTLEGROUND_QUEUE_2v2:
         return ARENA_TYPE_2v2;
     case BATTLEGROUND_QUEUE_3v3:

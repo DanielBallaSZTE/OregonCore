@@ -225,6 +225,16 @@ struct PvPInfo
     time_t endTimer;
 };
 
+struct ArenaTeam1v1
+{
+  bool hasArenaTeam;
+  std::string name;
+  uint32 teamId;
+  uint32 rating;
+  uint32 games;
+  uint32 wins;
+};
+
 struct DuelInfo
 {
     DuelInfo() : initiator(NULL), opponent(NULL), startTimer(0), startTime(0), outOfBound(0) {}
@@ -722,6 +732,7 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOADARENAINFO            = 18,
     PLAYER_LOGIN_QUERY_LOADBGDATA               = 19,
     PLAYER_LOGIN_QUERY_LOADSKILLS               = 20,
+    PLAYER_LOGIN_QUERY_LOAD1V1ARENAINFO         = 21,
 
     MAX_PLAYER_LOGIN_QUERY
 };
@@ -967,6 +978,61 @@ class Player : public Unit, public GridObject<Player>
 
         static UpdateMask updateVisualBits;
         static void InitVisibleBits();
+
+
+        /* --- 1v1 arena --- */
+        ArenaTeam1v1 arena1v1;
+
+        bool has1v1ArenaTeam()
+        {
+          return arena1v1.hasArenaTeam;
+        }
+
+        void setHas1v1ArenaTeam(bool has1v1ArenaTeam)
+        {
+          arena1v1.hasArenaTeam = has1v1ArenaTeam;
+        }
+
+        uint32 get1v1ArenaGames()
+        {
+          return arena1v1.games;
+        }
+
+        void add1v1ArenaGame()
+        {
+          arena1v1.games++;
+        }
+
+        void add1v1ArenaWin()
+        {
+          arena1v1.wins++;
+        }
+
+        void set1v1ArenaRating(int rating)
+        {
+          arena1v1.rating = rating;
+        }
+
+        uint32 get1v1ArenaWins()
+        {
+          return arena1v1.wins;
+        }
+
+        uint32 get1v1ArenaRating()
+        {
+          return arena1v1.rating;
+        }
+
+        void set1v1ArenaName(std::string name)
+        {
+          arena1v1.name = name;
+        }
+
+        std::string get1v1ArenaName()
+        {
+          return arena1v1.name;
+        }
+
 
         void AddToWorld() override;
         void RemoveFromWorld() override;
@@ -2778,6 +2844,7 @@ class Player : public Unit, public GridObject<Player>
         bool _LoadHomeBind(QueryResult_AutoPtr result);
         void _LoadDeclinedNames(QueryResult_AutoPtr result);
         void _LoadArenaTeamInfo(QueryResult_AutoPtr result);
+        void _Load1v1Arena(QueryResult_AutoPtr result);
         void _LoadBGData(QueryResult_AutoPtr result);
 
         /*********************************************************/

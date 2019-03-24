@@ -332,6 +332,14 @@ class ChatHandler
         bool HandleServerShutDownCommand(const char* args);
         bool HandleServerShutDownCancelCommand(const char* args);
 
+        /* ---- 1v1 arena ---- */
+        bool HandleCreate1v1ArenaCommand(const char* args);
+        bool HandleDelete1v1ArenaCommand(const char* args);
+        bool HandleGames1v1ArenaCommand(const char* args);
+        bool HandleRating1v1ArenaCommand(const char* args);
+        bool HandleWins1v1ArenaCommand(const char* args);
+        bool HandleQueue1v1ArenaCommand(const char* args);
+
         bool HandleAddHonorCommand(const char* args);
         bool HandleHonorAddKillCommand(const char* args);
         bool HandleUpdateHonorFieldsCommand(const char* args);
