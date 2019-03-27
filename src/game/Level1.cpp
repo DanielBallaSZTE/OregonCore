@@ -2100,6 +2100,11 @@ bool ChatHandler::HandleTeleCommand(const char* args)
 
     Player* _player = m_session->GetPlayer();
 
+    if (_player->IsInCombat()) {
+      PSendSysMessage("Cannot teleport while in combat.");
+      return true;
+    }
+
     // id, or string, or [name] Shift-click form |color|Htele:id|h[name]|h|r
     GameTele const* tele = extractGameTeleFromLink((char*)args);
 
@@ -2873,4 +2878,3 @@ bool ChatHandler::HandleDrunkCommand(const char* args)
 
     return true;
 }
-
