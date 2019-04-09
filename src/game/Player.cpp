@@ -6535,7 +6535,7 @@ void Player::UpdateZone(uint32 newZone)
     }
 
     pvpInfo.inNoPvPArea = false;
-    if (zone->flags & AREA_FLAG_SANCTUARY || zone->ID == 3476)                   // in sanctuary
+    if ((zone->flags & AREA_FLAG_SANCTUARY) || zone->ID == 3476)                   // in sanctuary
     {
         SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_SANCTUARY);
         pvpInfo.inNoPvPArea = true;

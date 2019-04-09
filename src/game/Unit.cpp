@@ -9575,7 +9575,7 @@ bool Unit::IsValidAttackTarget(Unit const* target) const
 bool Unit::IsInSanctuary() const
 {
     const AreaTableEntry* area = GetAreaEntryByAreaID(GetAreaId());
-    if (area && area->flags & AREA_FLAG_SANCTUARY || area->ID == 3476)       //sanctuary
+    if ((area && area->flags & AREA_FLAG_SANCTUARY) || area->ID == 3476)       //sanctuary
         return true;
 
     return false;
