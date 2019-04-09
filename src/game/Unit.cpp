@@ -941,7 +941,7 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
     if (victim != this && GetTypeId() == TYPEID_PLAYER && victim->GetTypeId() == TYPEID_PLAYER)
     {
         const AreaTableEntry* area = GetAreaEntryByAreaID(victim->GetAreaId());
-        if (area && area->flags & AREA_FLAG_SANCTUARY)       //sanctuary
+        if ((area && area->flags & AREA_FLAG_SANCTUARY) || (area->ID == 3476))       //sanctuary
             return 0;
     }
 
@@ -9575,7 +9575,7 @@ bool Unit::IsValidAttackTarget(Unit const* target) const
 bool Unit::IsInSanctuary() const
 {
     const AreaTableEntry* area = GetAreaEntryByAreaID(GetAreaId());
-    if (area && area->flags & AREA_FLAG_SANCTUARY)       //sanctuary
+    if (area && area->flags & AREA_FLAG_SANCTUARY || area->ID == 3476)       //sanctuary
         return true;
 
     return false;
