@@ -750,6 +750,14 @@ void Battleground::EndBattleground(uint32 winner)
               uint32 loser_id = GetArenaTeamIdForTeam(winner == ALLIANCE ? HORDE : ALLIANCE);
               Player* player_won = ObjectAccessor::FindPlayer(winner_id);
               Player* player_lost = ObjectAccessor::FindPlayer(loser_id);
+
+              // Early return, hotfix
+              if (!player_won || !player_lost)
+              {
+                sLog.outError("One of the players nullptr in 1v1arena");
+                return;
+              }
+
               // Winnner
               player_won->add1v1ArenaWin();
               float chance_winner = winner_arena_team->GetChanceAgainst(player_won->get1v1ArenaRating(), player_lost->get1v1ArenaRating());
