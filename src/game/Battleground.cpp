@@ -747,15 +747,20 @@ void Battleground::EndBattleground(uint32 winner)
             if (m_ArenaType == ARENA_TYPE_1v1)
             {
               uint32 winner_id = GetArenaTeamIdForTeam(winner == ALLIANCE ? ALLIANCE : HORDE);
+              std::cout << "Winner id: " << winner_id;
               uint32 loser_id = GetArenaTeamIdForTeam(winner == ALLIANCE ? HORDE : ALLIANCE);
+              std::cout << "loserid: " << loser_id;
               Player* player_won = ObjectAccessor::FindPlayer(winner_id);
               Player* player_lost = ObjectAccessor::FindPlayer(loser_id);
+
+              std::cout << "won null: " << (player_won == NULL);
+              std::cout << "lost null: "  << (player_lost == NULL);
 
               // Early return, hotfix
               if (!player_won || !player_lost)
               {
                 sLog.outError("One of the players nullptr in 1v1arena");
-                return;
+                //return;
               }
 
               // Winnner
